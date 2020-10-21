@@ -1,0 +1,86 @@
+\documentclass[a4paper,class=article,border=0pt,crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{color}
+\definecolor{myviolet}{RGB}{55,54,112}
+\usepackage{pgfplots}
+\usetikzlibrary{calc,fadings,decorations.pathreplacing,arrows.meta}
+\pgfplotsset{compat=1.14}
+\begin{document}
+
+\begin{tikzpicture}[xscale=0.3,yscale=1,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\footnotesize
+ \pgfmathsetmacro{\xone}{0}
+ \pgfmathsetmacro{\xtwo}{500}
+ \pgfmathsetmacro{\yone}{192}
+ \pgfmathsetmacro{\ytwo}{{192+65}}
+ \pgfmathsetmacro{\ytwoNotProjected}{{192+87.31}}
+ \def\drFirst{2}
+ \def\drRest{9}
+ \def\drFirstNotProjected{2.686153846153846}
+ \def\drRestNotProjected{12.087692307692306}
+ \def\ratio{0.25/0.7}
+
+
+\begin{scope}[line width = 2pt,  black,font={\fontsize{50pt}{12}\selectfont}]<+->;
+  \draw[-{Stealth[scale=4,width=10pt]}] (\xone - 10,\yone - 10 * \ratio) -- coordinate (y axis mid) (\xone - 10,\ytwo + 10 * \ratio) node [above,  yshift=200pt, scale = 3,xshift=15pt] {distance on}  node [above,  yshift=110pt, scale = 3,xshift=25pt] {the electrode} node [above, yshift=20pt,scale = 3] {(cm)};
+  \foreach \y in {0}
+  \draw (\xone - 15, {\yone + \y}) -- (\xone - 5,{\yone + \y}) node[left,midway,xshift=-30,scale=3] {\pgfmathparse{\y} \pgfmathprintnumber[fixed,precision=0]{\pgfmathresult}};
+  \foreach \y in {0,...,7}
+  \draw (\xone - 15, {\yone + \drFirst + \y * \drRest}) -- (\xone - 5,{\yone + \drFirst + \y * \drRest}) node[left,midway,xshift=-30,scale=3] {\pgfmathparse{\drFirstNotProjected + \y*\drRestNotProjected} \pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}};
+\end{scope}
+
+\begin{scope}[line width = 2pt,  black,font={\fontsize{50pt}{12}\selectfont}]<+->;
+  \draw[-{Stealth[scale=4,width=10pt]}] (\xone - 40,\yone - 10 * \ratio) -- coordinate (y axis mid) (\xone - 40,\ytwo + 10 * \ratio) node [above,  yshift=200pt, scale = 3,xshift=-5pt] {radial} node [above, yshift=110pt, scale = 3,xshift=-5pt] {depth} node [above, yshift=20pt,scale = 3] {(cm)};
+  \foreach \y in {0}
+  \draw (\xone - 45, {\yone + \y}) -- (\xone - 35,{\yone + \y}) node[left,midway,xshift=-30,scale=3] {\pgfmathparse{\yone} \pgfmathprintnumber[fixed,precision=0]{\pgfmathresult}};
+  \foreach \y in {0,...,7}
+  \draw (\xone - 45, {\yone + \drFirst + \y * \drRest}) -- (\xone - 35,{\yone + \drFirst + \y * \drRest}) node[left,midway,xshift=-30,scale=3] {\pgfmathparse{\yone+ \drFirst  + \y*\drRest} \pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}};
+\end{scope}
+
+\begin{scope}[line width = 2pt,  black,font={\fontsize{50pt}{12}\selectfont}]<+->;
+  \draw[-{Stealth[scale=4,width=10pt]}] (\xone - 10,\yone - 20 * \ratio) -- coordinate (y axis mid) (\xtwo + 20, \yone - 20 * \ratio) node [right, xshift=10pt, yshift=8pt, scale = 3] {z} node [right, xshift=-30pt, yshift=-100pt, scale = 3] {(m)};
+  \foreach \z in {0,...,5}
+  \draw ({\xone + 100*\z},\yone - 25 * \ratio) --  (\xone  + 100*\z, \yone - 15 * \ratio) node[below, yshift = - 100pt,scale=3] {\z};
+\end{scope}
+% function NEW READOUT, horizontal lines
+\begin{scope}[very thick, black, line width = 1pt]
+\def\deta{0.0025}
+\foreach \x in {1, ..., 650}
+\draw ({(\yone+\drFirst)/tan(2*atan(exp(-\x*\deta))))}, \yone+\drFirst) -- ({(\yone+\drFirst+\drRest)/tan(2*atan(exp(-\x*\deta)))}, \yone+\drFirst+\drRest);
+\foreach \x in {651,..., 668}
+\draw ({(\yone+\drFirst)/tan(2*atan(exp(-\x*\deta))))}, \yone+\drFirst) -- (\xtwo,{\xtwo*tan(2*atan(exp(-\x*\deta)))});
+\end{scope}
+\begin{scope}[very thick, black, line width = 4pt]
+\def\deta{0.01}
+\foreach \x in {1, ..., 141}
+\draw ({\yone/tan(2*atan(exp(-\x*\deta))))}, \yone) -- ({\ytwo/tan(2*atan(exp(-\x*\deta)))}, \ytwo);
+\foreach \x in {142,..., 168}
+\draw ({\yone/tan(2*atan(exp(-\x*\deta))))}, \yone) -- (\xtwo,{\xtwo*tan(2*atan(exp(-\x*\deta)))});
+\end{scope}
+\begin{scope}[very thick, black, line width = 8pt]
+\foreach \layer in {1,...,1}
+\draw (\xone,\yone+\layer*\drFirst) -- (\xtwo, \yone+\layer*\drFirst);
+\foreach \layer in {1,...,6}
+\draw (\xone,\yone+\drFirst+\layer*\drRest) -- (\xtwo, \yone+\drFirst+\layer*\drRest);
+\end{scope}
+
+\begin{scope}[line width = 2pt,  dashed,dash pattern=on 30pt off 10pt, blue,font={\fontsize{50pt}{12}\selectfont}]<+->;
+   \def\deta{0.1}
+   \def\drend{\drRest*3.2}
+   \foreach \x in {1,..., 14}
+   \draw ({\yone/tan(2*atan(exp(-\x*\deta))))}, \yone) -- ({(\ytwo+\drend)/tan(2*atan(exp(-\x*\deta)))}, \ytwo+\drend) node [above, very near end, scale=3, rotate = {atan(0.7/0.25*tan(2*atan(exp(-\x*\deta))))} ] {$\eta$ = \pgfmathparse{\x*\deta} \pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}};
+   \pgfmathsetmacro{\xend}{(\ytwo+\drend)/tan(2*atan(exp(-14.*\deta)))}
+   \foreach \x in {15,..., 16}
+   \draw ({\yone/tan(2*atan(exp(-\x*\deta))))}, \yone) -- (\xend,{\xend*tan(2*atan(exp(-\x*\deta)))}) node [above, very near end, scale=3, rotate = {atan(0.7/0.25*tan(2*atan(exp(-\x*\deta))))} ] {$\eta$ = \pgfmathparse{\x*\deta} \pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}};
+ \end{scope}
+
+\begin{scope}[line width = 12pt, black]<+->;
+% axes
+  \draw[gray,-] (\xone, \yone) -- (\xtwo, \yone) {};
+  \draw[gray,-] (\xone, \ytwo) -- (\xtwo, \ytwo) {};
+  \draw[gray,-,dashed,dash pattern=on 30pt off 10pt] (\xone, \yone) -- (\xone, \ytwo) {};
+  \draw[gray,-] (\xtwo, \yone) -- (\xtwo, \ytwo) {};
+\end{scope}
+
+\end{tikzpicture}
+
+\end{document}
