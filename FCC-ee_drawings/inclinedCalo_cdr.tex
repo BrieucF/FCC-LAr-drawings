@@ -31,28 +31,32 @@
 
 \begin{document}
 
-\begin{tikzpicture}[xscale=2,yscale=2,spy using outlines={rectangle, magnification=7, size=9cm, height = 8cm, connect spies}]\footnotesize
-  \spy [ultra thick, black] on (39.,3.4) in node [fill=white] at (23,0.85);
+\begin{tikzpicture}[xscale=2,yscale=2,spy using outlines={rectangle, magnification=8, size=7cm, height=6cm, connect spies}]\footnotesize
+    \spy [ultra thick, black] on (43.65,{3.4-4}) in node [fill=white] at (24.2,{1.9-2}); % Since xscale=2, spy coordinate have to be *2...
+
   % \spy [ultra thick, black] on (39.45,3.4) in node [fill=white] at (25.5,1.5);
-  \pgfmathsetmacro{\rin}{18.2}
-  \pgfmathsetmacro{\rout}{27.5}
+  \pgfmathsetmacro{\mynewoffset}{5}
+  \pgfmathsetmacro{\rin}{20.7}
+  \pgfmathsetmacro{\rout}{27.4}
   \pgfmathsetmacro{\air}{0.3}
   \pgfmathsetmacro{\vacuum}{0.01}
   \pgfmathsetmacro{\calofront}{0.5}
   \pgfmathsetmacro{\caloback}{1}
   \pgfmathsetmacro{\halfcalofront}{{\calofront/2}}
   \pgfmathsetmacro{\halfcaloback}{{\caloback/2}}
-  \pgfmathsetmacro{\bathfront}{0.2}
+  \pgfmathsetmacro{\bathfront}{0.1}
   \pgfmathsetmacro{\bathback}{0.5}
   \pgfmathsetmacro{\angle}{50}
   \pgfmathsetmacro{\absorber}{0.02}
   \pgfmathsetmacro{\readout}{0.012}
   \pgfmathsetmacro{\cell}{0.5}
   \pgfmathsetmacro{\tower}{0.75}
-  \pgfmathsetmacro{\numplanes}{1408}
+  \pgfmathsetmacro{\numplanes}{1552}
   \pgfmathsetmacro{\dphi}{360./\numplanes}
   \pgfmathsetmacro{\detin}{{\rin+\air+\calofront+\bathfront}}
+  \message{\detin}
   \pgfmathsetmacro{\detout}{{\rout-\air-\caloback-\bathback}}
+  \message{\detout}
   \pgfmathsetmacro{\plane}{sqrt(pow(\detout,2)-pow(\detin*sin(\angle) ,2))-\detin*cos(\angle)}
   \pgfmathsetmacro{\r}{{\detin+\plane/2}}
   \pgfmathsetmacro{\planeFirst}{{\plane/130*4}}
@@ -73,6 +77,8 @@
   \pgfmathsetmacro{\highlitedTowerMaxThree}{{(\phiTowerHighlightThree+0.5)*360/\phibins}}
   \pgfmathsetmacro{\shownumplanes}{int(\numplanes/(360/\phiShow))}
   \pgfmathsetmacro{\showphibins}{int(\phibins/(360/\phiShow))}
+  \pgfmathsetmacro{\ione}{{88.5}}
+  \pgfmathsetmacro{\itwo}{{98.5}}
   \ifthenelse{\angle=50 \and \numplanes=1408}
   { \pgfmathsetmacro{\ione}{{81.5}}
     \pgfmathsetmacro{\itwo}{{88.5}}
@@ -99,7 +105,8 @@
     }
   }
 
-  \clip ({0.86*\rin},{-\rin/5.25}) rectangle ({0.99*\rout}, {\rin/4.5});
+
+  \clip ({0.9*\rin},{-\rin/5.25}) rectangle ({0.99*\rout}, {\rin/8});
   %\clip ({1.05*\rin},{-\rin/10}) rectangle ({1.3*\rin}, {\rin/10});
 
   % CRYOSTAT
@@ -114,6 +121,9 @@
     \fill (0,0) ++(\phiOffsetFromX:{\rin+\air-\vacuum+\halfcalofront}) arc (\phiOffsetFromX:{\phiOffsetFromX+\phiShow}:{\rin+\air-\vacuum+\halfcalofront});
     \fill[fill=white] (0,0) ++(\phiOffsetFromX:{\rin+\air-\vacuum}) arc (\phiOffsetFromX:{\phiOffsetFromX+\phiShow}:{\rin+\air-\vacuum});
   \end{scope}
+
+
+
 
   % ABSORBER - only outer in the first layer
   \begin{scope}[red!80, line width = 0.005]
@@ -245,6 +255,16 @@
     }
   \end{scope}
 
+
+
+
+
+
+
+
+
+
+
   % % tower
   % \begin{scope}[black, line width = \tower]
   %   \foreach \i in {0,..., \showphibins}
@@ -275,10 +295,10 @@
     % \draw[<->,line width = {\tower}, >=latex] (0,0) ++ ({\highlitedTowerMaxTwo}:{\detout+0.1}) arc ({\highlitedTowerMaxTwo}:{\highlitedTowerMinOne}:{\detout+0.1}) node [below, midway,rotate=\phitextCluster] {\large \num[round-mode=places,round-precision=0]{\phiCluster}$\Delta\varphi$ = \num[round-mode=places,round-precision=3]{\dPhiClusterRadians} rad};
     % \spy [blue] on (20,0{\rin},0) in node [fill=white] at (25,1.5);
 %    \draw[->,>=latex] (-3:{\rin-5}) -- (-3:\rin+\air-\vacuum) node [at end, above, xshift=-1cm, rotate=-3] {\textbf{\LARGE 185 cm}};
-    \draw[->,>=latex] (-5:{\rin-5}) -- (-5:\rout-\air+\vacuum) node [at end, above, xshift=-1cm, yshift=0.05cm, rotate=-5] {\textbf{\LARGE 272 cm}};
-    \draw[->,>=latex] (-4:{\rin-5}) -- (-4:\detin) node [at end, above, xshift=-1cm, rotate=-4] {\textbf{\LARGE 192 cm}};
-    \draw[->,>=latex] (-6:{\rin-5}) -- (-6:\detout) node [at end, xshift=-1.2cm, yshift=0.4cm, rotate=-6] {\textbf{\LARGE 257 cm}};
-    \draw[<->,>=latex] (-7:\detin) -- (-7:\detout) node [above,midway,rotate=-7] {\textbf{\LARGE 65 cm}};
+    \draw[->,>=latex] (-5:{\rin-5}) -- (-5:\rout-\air+\vacuum) node [at end, above, xshift=-1cm, yshift=0.05cm, rotate=-5] {\textbf{\LARGE 271 cm}};
+    \draw[->,>=latex] (-4:{\rin-5}) -- (-4:\rin+\air-\vacuum) node [at end, above, xshift=-1cm, rotate=-4] {\textbf{\LARGE 210 cm}};
+    \draw[->,>=latex] (-6:{\rin-5}) -- (-6:\detout) node [at end, xshift=-1.2cm, yshift=0.4cm, rotate=-6] {\textbf{\LARGE 256 cm}};
+    \draw[<->,>=latex] (-7:\detin) -- (-7:\detout) node [above,midway,rotate=-7] {\textbf{\LARGE 40 cm}};
     % \draw[<->,>=latex] (-8:{\rin+\air-\vacuum}) -- (-8:\rin) node [above, near end, xshift=0.2cm, rotate=-8] {\large 3 cm};
     % \draw[<->,>=latex] (-6.:{\rout-\air+\vacuum}) -- (-6.:\rout) node [above, near end, xshift=-0.05cm, rotate=-6.] {\large 3 cm};
     \draw[<->,>=latex] (-8:{\rin+\air-\vacuum}) -- (-8:\rin+\air+\calofront) node [above, xshift=-0.5cm, yshift=0.1cm, rotate=-8] {\textbf{\LARGE 5 cm}};
@@ -286,27 +306,28 @@
     %% \node (angLabel) at (6:{\rout-1}) {\Huge\bf {\numplanes} absorbers};
     %% \node (angLabel) at ({{0.86*\rin+(0.99*\rout-0.86*\rin)/2}},4.3) {\Huge\textbf{FCC-hh barrel ECAL}};
 %%%%%    \node [below of = planeLabel] {\Huge{ $\Delta\varphi=$\num[round-mode=places,round-precision=4]{\dPhiTowerRadians}}};
-    \node[red!80] at (22.05,3.8) {\Huge absorber};
-    %% \draw[->, >=latex, red!80] (22.05,3.6) -- (23.2, 2.84);
-    \draw[double arrow=4pt colored by white and red!80] (22.05,3.6) -- (23.2, 2.84);
-    \node[green!80] at (24.1,3.8) {\Huge readout};
-    %% \draw[->, >=latex, green!80] (24.1,3.6) -- (24.4, 2.84);
-    \draw[double arrow=4pt colored by white and green!80] (24.1,3.6) -- (24.4, 2.84);
-    \node[black!60] at (17.,0.3) {\Huge cryostat};
-    %% \draw[->, >=latex, black!65] (17.73,0.3) -- (18.65, 0.48);
-    \draw[double arrow=4pt colored by white and black!65] (17.73,0.3) -- (18.65, 0.48);
-    \node[violet!80] at (20.,3.8) {\Huge liquid argon };
-    %% \node[violet!80] at (17.,1.1) {\Huge argon};
-    %% \draw[->, >=latex, violet!80] (20,3.6) -- (18.95, 3.);
-    %% \draw[->, >=latex, violet!80] (20.2,3.6) -- (21, 2.84);
-    \draw[double arrow=4pt colored by white and violet!80] (20,3.6) -- (18.8, 3.);
-    \draw[double arrow=4pt colored by white and violet!80] (20.2,3.6) -- (21.125, 2.81);
-    \node[black!80] at (17,2.7) {\Huge 1st layer};
-    \node[black!80] at (17,2.4) {\Large (presampler)};
-    \node[black!80] at (17,2.18) {\Large no Pb};
-    %% \draw[->, >=latex, black!95] (18.,2.6) -- (19.1, 2.28);
-    \draw[double arrow=4pt colored by white and black!95] (17.75,2.5) -- (19.1, 2.6);
-    \draw[double arrow=4pt colored by white and black!95] (17.5,2.18) -- (20.8, 2.2);
+
+    % Text And Arrows
+    \node[black!80] at (19.5,2.7-1.2) {\huge 1st layer};
+    \node[black!80] at (19.5,2.4-1.2) {\large (presampler)};
+    \node[black!80] at (19.5,2.18-1.2) {\large no Pb};
+    \draw[double arrow=4pt colored by white and black!95] (20.2,1.5) -- (21.58, 1.6);
+
+    \node[black!60] at (19.5,0.3) {\huge cryostat};
+    \draw[double arrow=4pt colored by white and black!65] (20.1,0.3) -- (21.1, 0.27);
+
+
+    \fill[white] (20,2.1) rectangle (28,4);
+    \node[violet!80] at (22.2,2.37) {\huge liquid argon };
+    \draw[double arrow=4pt colored by white and violet!80] (22.1,2.2) -- (21.45, 1.7);
+    \draw[double arrow=4pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.41, 1.4);
+    \node[red!80] at (22.2+1.7,2.4) {\huge absorber};
+    \draw[double arrow=4pt colored by white and red!80] (22.2+1.7,2.2) -- (24.6, 1.4);
+    \node[green!80] at (22.2+1.7+1.4,2.4) {\huge readout};
+    \draw[double arrow=4pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.65, 1.4);
+
+
+
   \end{scope}
 
 
