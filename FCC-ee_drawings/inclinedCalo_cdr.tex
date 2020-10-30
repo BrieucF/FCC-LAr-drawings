@@ -32,12 +32,12 @@
 \begin{document}
 
 \begin{tikzpicture}[xscale=2,yscale=2,spy using outlines={rectangle, magnification=8, size=7cm, height=6cm, connect spies}]\footnotesize
-    \spy [ultra thick, black] on (43.65,{3.4-4}) in node [fill=white] at (24.2,{1.9-2}); % Since xscale=2, spy coordinate have to be *2...
+    \spy [ultra thick, black] on (43.65,{3.4-4}) in node [fill=white] at (24.1,{1.9-2}); % Since xscale=2, spy coordinate have to be *2...
 
   % \spy [ultra thick, black] on (39.45,3.4) in node [fill=white] at (25.5,1.5);
   \pgfmathsetmacro{\mynewoffset}{5}
   \pgfmathsetmacro{\rin}{20.7}
-  \pgfmathsetmacro{\rout}{27.4}
+  \pgfmathsetmacro{\rout}{27.3}
   \pgfmathsetmacro{\air}{0.3}
   \pgfmathsetmacro{\vacuum}{0.01}
   \pgfmathsetmacro{\calofront}{0.5}
@@ -45,11 +45,11 @@
   \pgfmathsetmacro{\halfcalofront}{{\calofront/2}}
   \pgfmathsetmacro{\halfcaloback}{{\caloback/2}}
   \pgfmathsetmacro{\bathfront}{0.1}
-  \pgfmathsetmacro{\bathback}{0.5}
+  \pgfmathsetmacro{\bathback}{0.4}
   \pgfmathsetmacro{\angle}{50}
   \pgfmathsetmacro{\absorber}{0.02}
   \pgfmathsetmacro{\readout}{0.012}
-  \pgfmathsetmacro{\cell}{0.5}
+  \pgfmathsetmacro{\cell}{0.5} % thickness of the dots showing longitudinal segmentation of the PCB
   \pgfmathsetmacro{\tower}{0.75}
   \pgfmathsetmacro{\numplanes}{1552}
   \pgfmathsetmacro{\dphi}{360./\numplanes}
@@ -249,7 +249,8 @@
         \pgfmathsetmacro{\yCnext}{{\yA+(\xBnext-\xA)*sin(\angle)+(\yBnext-\yA)*cos(\angle)}};
 
         \pgfmathsetmacro{\phiCentre}{{atan((\yC+\yCnext)/2/((\xC+\xCnext)/2))}}
-              \draw ({\xC - (\cellOutThickness)*cos(-\angle+\phiReadout)}, {\yC + (\cellOutThickness)*sin(-\angle+\phiReadout)})
+        %Draw the separation in longitudinal readout layers
+             \draw ({\xC - (\cellOutThickness)*cos(-\angle+\phiReadout)}, {\yC + (\cellOutThickness)*sin(-\angle+\phiReadout)})
               -- ({\xC + (\cellOutThickness)*cos(-\angle+\phiReadout)}, {\yC - (\cellOutThickness)*sin(-\angle+\phiReadout)});
       }
     }
@@ -295,7 +296,7 @@
     % \draw[<->,line width = {\tower}, >=latex] (0,0) ++ ({\highlitedTowerMaxTwo}:{\detout+0.1}) arc ({\highlitedTowerMaxTwo}:{\highlitedTowerMinOne}:{\detout+0.1}) node [below, midway,rotate=\phitextCluster] {\large \num[round-mode=places,round-precision=0]{\phiCluster}$\Delta\varphi$ = \num[round-mode=places,round-precision=3]{\dPhiClusterRadians} rad};
     % \spy [blue] on (20,0{\rin},0) in node [fill=white] at (25,1.5);
 %    \draw[->,>=latex] (-3:{\rin-5}) -- (-3:\rin+\air-\vacuum) node [at end, above, xshift=-1cm, rotate=-3] {\textbf{\LARGE 185 cm}};
-    \draw[->,>=latex] (-5:{\rin-5}) -- (-5:\rout-\air+\vacuum) node [at end, above, xshift=-1cm, yshift=0.05cm, rotate=-5] {\textbf{\LARGE 271 cm}};
+    \draw[->,>=latex] (-5:{\rin-5}) -- (-5:\rout-\air+\vacuum) node [at end, above, xshift=-1cm, yshift=0.05cm, rotate=-5] {\textbf{\LARGE 270 cm}};
     \draw[->,>=latex] (-4:{\rin-5}) -- (-4:\rin+\air-\vacuum) node [at end, above, xshift=-1cm, rotate=-4] {\textbf{\LARGE 210 cm}};
     \draw[->,>=latex] (-6:{\rin-5}) -- (-6:\detout) node [at end, xshift=-1.2cm, yshift=0.4cm, rotate=-6] {\textbf{\LARGE 256 cm}};
     \draw[<->,>=latex] (-7:\detin) -- (-7:\detout) node [above,midway,rotate=-7] {\textbf{\LARGE 40 cm}};
@@ -319,12 +320,12 @@
 
     \fill[white] (20,2.1) rectangle (28,4);
     \node[violet!80] at (22.2,2.37) {\huge liquid argon };
-    \draw[double arrow=4pt colored by white and violet!80] (22.1,2.2) -- (21.45, 1.7);
-    \draw[double arrow=4pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.41, 1.4);
+    \draw[double arrow=4pt colored by white and violet!80] (22.1,2.2) -- (21.45, 1.7); %towards services bath
+    \draw[double arrow=4pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.31, 1.4); %towards mangification box
     \node[red!80] at (22.2+1.7,2.4) {\huge absorber};
-    \draw[double arrow=4pt colored by white and red!80] (22.2+1.7,2.2) -- (24.6, 1.4);
+    \draw[double arrow=4pt colored by white and red!80] (22.2+1.7,2.2) -- (24.5, 1.4);
     \node[green!80] at (22.2+1.7+1.4,2.4) {\huge readout};
-    \draw[double arrow=4pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.65, 1.4);
+    \draw[double arrow=4pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.55, 1.4);
 
 
 
@@ -389,7 +390,7 @@
           \message{\planeRest};
           \pgfmathsetmacro{\planeRestInCm}{{10.*\planeRest}};
           % \fill[%decorate, decoration={random steps,segment length=0.2mm, amplitude=0.01mm},
-          % thick, rounded corners=1ex,,white, opacity=0.6]  ({\xC}, {\yC}) circle ({\planeRest});
+          % Draw the arrow on regular cells thick, rounded corners=1ex,,white, opacity=0.6]  ({\xC}, {\yC}) circle ({\planeRest});
           \draw[<->,>=latex, ultra thick,black]({\xC + \cellInThickness*cos(-\angle+\phiReadout)}, {\yC - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeRestInCm} cm};
         } {}
       }
