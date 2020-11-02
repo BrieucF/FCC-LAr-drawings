@@ -29,10 +29,11 @@
 }
 %dimensions in decimeters
 
+%FIXME there is something wrong in this drawing: the depth of active is correctly 40 cm, but when getting the length of each layer parallel to the absorber plane using L/cos(50) you dont end up with correct number.... probably due to the the fact that using right-angled triangle is not correct due to the curvature
 \begin{document}
 
-\begin{tikzpicture}[xscale=2,yscale=2,spy using outlines={rectangle, magnification=8, size=7cm, height=6cm, connect spies}]\footnotesize
-    \spy [ultra thick, black] on (43.65,{3.4-4}) in node [fill=white] at (24.1,{1.9-2}); % Since xscale=2, spy coordinate have to be *2...
+\begin{tikzpicture}[xscale=2,yscale=2,spy using outlines={rectangle, magnification=8, size=5cm, height=4cm, connect spies}]\footnotesize
+    \spy [ultra thick, black] on (43.65,{3.4-4}) in node [fill=white] at (24.1,{1.9-1.5}); % Since xscale=2, spy coordinate have to be *2...
 
   % \spy [ultra thick, black] on (39.45,3.4) in node [fill=white] at (25.5,1.5);
   \pgfmathsetmacro{\mynewoffset}{5}
@@ -50,17 +51,24 @@
   \pgfmathsetmacro{\absorber}{0.02}
   \pgfmathsetmacro{\readout}{0.012}
   \pgfmathsetmacro{\cell}{0.5} % thickness of the dots showing longitudinal segmentation of the PCB
-  \pgfmathsetmacro{\tower}{0.75}
-  \pgfmathsetmacro{\numplanes}{1552}
+  \pgfmathsetmacro{\tower}{0.75} % thickness of the arrows chowing the dimensions of cryostat etc
+  \pgfmathsetmacro{\numplanes}{1536}
   \pgfmathsetmacro{\dphi}{360./\numplanes}
-  \pgfmathsetmacro{\detin}{{\rin+\air+\calofront+\bathfront}}
-  \message{\detin}
-  \pgfmathsetmacro{\detout}{{\rout-\air-\caloback-\bathback}}
-  \message{\detout}
-  \pgfmathsetmacro{\plane}{sqrt(pow(\detout,2)-pow(\detin*sin(\angle) ,2))-\detin*cos(\angle)}
+  \pgfmathsetmacro{\detin}{{\rin+\air+\calofront+\bathfront}} % where sensitive detector starts
+  \pgfmathsetmacro{\detout}{{\rout-\air-\caloback-\bathback}}% where sensitive detector ends
+  \pgfmathsetmacro{\plane}{sqrt(pow(\detout,2)-pow(\detin*sin(\angle) ,2))-\detin*cos(\angle)} %probably tells the length of the absorbers readout etc, parallel to it
+  \message{\plane}
   \pgfmathsetmacro{\r}{{\detin+\plane/2}}
-  \pgfmathsetmacro{\planeFirst}{{\plane/130*4}}
-  \pgfmathsetmacro{\planeRest}{{\plane/130*18}}
+  %\pgfmathsetmacro{\planeFirst}{{(\plane/130*4)*0.5}}  % 130*4 = 520, is linked to the presampler length
+  \pgfmathsetmacro{\planeFirst}{{0.2322267}}% is length of the first layers parralle to the plates
+  %\pgfmathsetmacro{\planeRest}{{\plane/130*18}} %tells the spacing between longitudinal layers, measured parallel to the readout
+  %\pgfmathsetmacro{\planeRest}{{0.544503339}} % the + smth is because using the pythagor is not entirely correct due to the curvature
+  \pgfmathsetmacro{\nLayer}{11} % if you change it here you have also to change it in the foreach loops
+  \pgfmathsetmacro{\planeRest}{{(\plane-\planeFirst)/\nLayer}}  % if you change the number of layer you have to manually change the number on the arrow (not working properly)
+  \message{\planeRest}
+  % is the depth of other layers / cos(50) to get the length of these layers parralle to the plates (\detin+\planeFirst+\j*\planeRest) * sin(\phiReadout) is the X spacing between lengitudinal layers dots,  \planeRest)*cos(\phiReadout)   is the Y spacing between lengitudinal layers dots,  phiReadout is the phi angle of the current absorber/gap/readout drawn in global coordinate
+  %tells the spacing between longitudinal layers/  18/130=0.1384, ratio with plane first is 4.5
+  \message{\planeFirst}
   \pgfmathsetmacro{\phibins}{{int(\numplanes/2)}}
   \pgfmathsetmacro{\dPhiTower}{{360/\phibins}}
   \pgfmathsetmacro{\phiShow}{360/8}
@@ -77,8 +85,8 @@
   \pgfmathsetmacro{\highlitedTowerMaxThree}{{(\phiTowerHighlightThree+0.5)*360/\phibins}}
   \pgfmathsetmacro{\shownumplanes}{int(\numplanes/(360/\phiShow))}
   \pgfmathsetmacro{\showphibins}{int(\phibins/(360/\phiShow))}
-  \pgfmathsetmacro{\ione}{{88.5}}
-  \pgfmathsetmacro{\itwo}{{98.5}}
+  \pgfmathsetmacro{\ione}{{86}} % tells which cell number you put the arrow on to show its length for the presampler, the lower it is the higher the arrow
+  \pgfmathsetmacro{\itwo}{{93}} % tells which cell number you put the arrow on to show its length for the second layer
   \ifthenelse{\angle=50 \and \numplanes=1408}
   { \pgfmathsetmacro{\ione}{{81.5}}
     \pgfmathsetmacro{\itwo}{{88.5}}
@@ -123,14 +131,14 @@
   \end{scope}
 
 
-
-
+% NB: (xA, yA) is the point at the midle of the absorber inner part, (xC, yC) is the point in the middle of the absorber outer part, xB yB are the coordinates of the point in the middle of the absorber if there was no inclination
+\iftrue
   % ABSORBER - only outer in the first layer
   \begin{scope}[red!80, line width = 0.005]
     \foreach \i in {0,..., \shownumplanes}
     {
       \pgfmathsetmacro{\phi}{{\phiOffsetFromY+\i*\dphi}}
-      % centre of radial
+      % centre of radial i.e.
       \pgfmathsetmacro{\xB}{{(\detin+\plane/2)*sin(\phi)}}
       \pgfmathsetmacro{\yB}{{(\detin+\plane/2)*cos(\phi)}}
       % position of begining of a plane
@@ -212,7 +220,8 @@
     }
   \end{scope}
 
-  % CELLS: longitudinal borders
+  % CELLS: longitudinal borders  %Draw the separation dots in longitudinal readout layers
+
   \begin{scope}[black, line width = {\cell}]
     \foreach \i in {0,..., \shownumplanes}
     {
@@ -235,8 +244,9 @@
       \pgfmathsetmacro{\cellOutThickness}{{\readout/2}};
 
       \pgfmathsetmacro{\phiCentre}{{atan((\yCFirst+\yCnext)/(\xCFirst+\xCnext))}};
-      \foreach \j in {0,..., 6}
+      \foreach \j in {0,..., 10}
       {
+      %Draw the separation dots in longitudinal readout layers
         \pgfmathsetmacro{\xB}{{(\detin+\planeFirst+\j*\planeRest)*sin(\phiReadout)}};
         \pgfmathsetmacro{\yB}{{(\detin+\planeFirst+\j*\planeRest)*cos(\phiReadout)}};
         \pgfmathsetmacro{\xBnext}{{(\detin+\planeFirst+(\j+1)*\planeRest)*sin(\phiReadout)}};
@@ -249,19 +259,13 @@
         \pgfmathsetmacro{\yCnext}{{\yA+(\xBnext-\xA)*sin(\angle)+(\yBnext-\yA)*cos(\angle)}};
 
         \pgfmathsetmacro{\phiCentre}{{atan((\yC+\yCnext)/2/((\xC+\xCnext)/2))}}
-        %Draw the separation in longitudinal readout layers
              \draw ({\xC - (\cellOutThickness)*cos(-\angle+\phiReadout)}, {\yC + (\cellOutThickness)*sin(-\angle+\phiReadout)})
               -- ({\xC + (\cellOutThickness)*cos(-\angle+\phiReadout)}, {\yC - (\cellOutThickness)*sin(-\angle+\phiReadout)});
       }
     }
   \end{scope}
 
-
-
-
-
-
-
+\fi
 
 
 
@@ -279,6 +283,7 @@
   %   \draw[dashed] (0,0) ++ (30:{\rin}) arc (30:-30:{\rin});
   %   \draw[dashed] (0,0) ++ (30:{\rout}) arc (30:-30:{\rout});
   % \end{scope}
+
   \fill[white] ({0.85*\rin},{\rin/5.25}) rectangle ({1.1*\rout}, {\rin/3});
 
   \begin{scope}[black, line width = {\tower*2}]
@@ -319,13 +324,13 @@
 
 
     \fill[white] (20,2.1) rectangle (28,4);
-    \node[violet!80] at (22.2,2.37) {\huge liquid argon };
-    \draw[double arrow=4pt colored by white and violet!80] (22.1,2.2) -- (21.45, 1.7); %towards services bath
-    \draw[double arrow=4pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.31, 1.4); %towards mangification box
-    \node[red!80] at (22.2+1.7,2.4) {\huge absorber};
-    \draw[double arrow=4pt colored by white and red!80] (22.2+1.7,2.2) -- (24.5, 1.4);
-    \node[green!80] at (22.2+1.7+1.4,2.4) {\huge readout};
-    \draw[double arrow=4pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.55, 1.4);
+    \node[violet!80] at (22.2,2.37) {\large active gap (noble liquid)};
+    %\draw[double arrow=4pt colored by white and violet!80] (22.1,2.2) -- (21.45, 1.7); %towards services bath
+    \draw[double arrow=3pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.51, 1.4); %towards mangification box
+    \node[red!80] at (22.2+1.7,2.4) {\large absorber};
+    \draw[double arrow=3pt colored by white and red!80] (22.2+1.7,2.2) -- (24.5+0.26, 1.4);
+    \node[green!80] at (22.2+1.7+1.4,2.4) {\large read-out electrode};
+    \draw[double arrow=3pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.55-0.41, 1.4);
 
 
 
@@ -362,16 +367,21 @@
 
       \pgfmathsetmacro{\phiCentre}{{atan((\yCFirst+\yCnext)/(\xCFirst+\xCnext))}}
 
+% put the arrow showing the length of the presampler cell
       \ifthenelse{\i=\ione}
       {
         \message{\planeFirst};
         \pgfmathsetmacro{\planeFirstInCm}{{10.*\planeFirst}};
         % \fill[%decorate, decoration={random steps,segment length=0.2mm, amplitude=0.01mm},
         % thick, rounded corners=1ex,,white,fill opacity=0.7]  ({\xCFirst}, {\yCFirst})  circle ({\planeFirst});
-        \draw[<->,>=latex,black,line width=1pt] ({\xCFirst + \cellInThickness*cos(-\angle+\phiReadout)}, {\yCFirst - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeFirstInCm} cm};
-      } {}
 
-      \foreach \j in {0,..., 6}
+        %\draw[<->,>=latex,black,line width=1pt] ({\xCFirst + \cellInThickness*cos(-\angle+\phiReadout)}, {\yCFirst - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-
+        %\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeFirstInCm} cm};
+
+        \draw[<->,>=latex,black,line width=1pt] ({\xCFirst}, {\yCFirst}) -- ({\xCnext}, {\yCnext}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeFirstInCm} cm};
+      } {}
+    % put the arrow showing the length of the second cell (the foreach is in case you want it everywhere but here there is another condition after that)
+      \foreach \j in {0,..., 10}
       {
         \pgfmathsetmacro{\xB}{{(\detin+\planeFirst+\j*\planeRest)*sin(\phiReadout)}};
         \pgfmathsetmacro{\yB}{{(\detin+\planeFirst+\j*\planeRest)*cos(\phiReadout)}};
@@ -389,9 +399,11 @@
         {
           \message{\planeRest};
           \pgfmathsetmacro{\planeRestInCm}{{10.*\planeRest}};
+          \pgfmathsetmacro{\planeRestInCm}{{5.39}};
           % \fill[%decorate, decoration={random steps,segment length=0.2mm, amplitude=0.01mm},
           % Draw the arrow on regular cells thick, rounded corners=1ex,,white, opacity=0.6]  ({\xC}, {\yC}) circle ({\planeRest});
-          \draw[<->,>=latex, ultra thick,black]({\xC + \cellInThickness*cos(-\angle+\phiReadout)}, {\yC - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeRestInCm} cm};
+          %\draw[<->,>=latex, ultra thick,black]({\xC + \cellInThickness*cos(-\angle+\phiReadout)}, {\yC - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeRestInCm} cm};
+           \draw[<->,>=latex, ultra thick,black]({\xC}, {\yC}) -- ({\xCnext}, {\yCnext}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeRestInCm} cm};
         } {}
       }
     }

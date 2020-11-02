@@ -1,0 +1,232 @@
+\RequirePackage{luatex85}
+\documentclass[a4paper,class=article,border=0pt,crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{tikz-dimline}
+\usepackage{pgf}
+\definecolor{myviolet}{RGB}{55,54,112}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\usetikzlibrary{calc,fadings,decorations.pathreplacing,patterns,decorations.pathmorphing,spy,arrows,decorations.markings,fadings}
+ \pgfplotsset{compat=1.16}
+
+\newcommand{\metalone}{[pattern= horizontal lines, pattern color=blue]}
+\newcommand{\metaltwo}{[pattern= vertical lines, pattern color=purple]}
+\newcommand{\poly}{[pattern= grid, pattern color=red]}
+\newcommand{\pdiff}{[pattern= north east lines, pattern color=orange]}
+\newcommand{\ndiff}{[pattern= north west lines, pattern color=green]}
+\newcommand{\pwell}{[pattern= crosshatch dots, pattern color=orange]}
+\newcommand{\nwell}{[pattern= crosshatch dots, pattern color=green]}
+\newcommand{\oxide}{[pattern = bricks, pattern color = olive]}
+\newcommand{\silicon}{[fill = white]}
+\newcommand{\metalthree}{[fill = teal]}
+
+
+
+\newcommand{\iso}{[pattern= crosshatch dots, pattern color=teal]}
+\newcommand{\trace}{[fill=orange, opacity=0.5]}
+\newcommand{\HV}{[fill=orange!80!red, orange!80!red]}
+
+
+% Variables: Rmin/max radius of the lower/higher edge cell under consideration,
+% Lmin/max is the half width of the cell under consideration at inner/outer radius
+% Rout is the outer radius of the full electrode
+% Rshift is deducted from all R's, I guess if you say the electrode is at 2.16 m radius you don't see anything on the drawing
+\begin{document}
+\def\H{0.12}
+\def\HP{0.003}
+\def\HT{0.017}
+\def\h{0.0035}
+\def\wt{0.0127}
+\def\margin{-0.1}
+\def\Rshift{216.}
+
+%\def\Rshift{0.}
+%\def\Rin{216.}
+\def\drFirst{2.322267}  % length of presampler parallel to it
+\def\drRest{5.385130} % length of other layers parallel to them
+\begin{tikzpicture}[xscale=12,yscale=0.6,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\Large
+    % Deal with the traces
+    \pgfmathsetmacro{\NlayerExtractedfront}{4}
+    \pgfmathsetmacro{\widthInner}{216./tan(2*atan(exp(-0.005)))}
+    \pgfmathsetmacro{\widthOuter}{(216+\drFirst+11*\drRest)/tan(2*atan(exp(-0.005)))}
+    \clip (-0.2, -0.4) rectangle ({\widthOuter+0.2},{\drFirst+11*\drRest+4});
+
+    %\clip (-1, -1) rectangle (1,\drFirst+11*\drRest+4);
+  \foreach \iLayer in {11,...,0} { %Draw the trapeze with FR4
+    \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
+      \pgfmathsetmacro{\Rmin}{216}
+      \pgfmathsetmacro{\Rmax}{\Rmin+\drFirst}
+    \def\halfN{4}
+    \def\already{0}
+    } {
+      \pgfmathsetmacro{\Rmin}{216+\drFirst+(\iLayer-1)*\drRest}
+      \pgfmathsetmacro{\Rmax}{\Rmin+\drRest}
+      \ifthenelse{\lengthtest{\iLayer pt<3 pt}}{
+        \def\halfN{0}
+        \def\already{0}
+      } { \pgfmathsetmacro\halfN{1}
+        \pgfmathsetmacro{\already}{\iLayer-3}
+      }
+    }
+    \ifthenelse{\lengthtest{\iLayer pt<2 pt}}{
+      \pgfmathsetmacro{\Rout}{216}
+    }
+    {\pgfmathsetmacro{\Rout}{216+\drFirst+11*\drRest}}
+
+    \pgfmathsetmacro{\Lmin}{\Rmin/tan(2*atan(exp(-0.005)))}
+    \pgfmathsetmacro{\Lmax}{\Rmax/tan(2*atan(exp(-0.005)))}
+    %\pgfmathsetmacro{\Lmax}{\Lmin}
+    \pgfmathsetmacro{\whv}{\Lmin}
+    \pgfmathsetmacro{\ws}{2*\HT}
+    \pgfmathsetmacro{\wp}{\Lmin*0.95}
+    \pgfmathsetmacro{\HS}{(5/6. * \H - 5*\h - 2*\HT)/2.}
+    \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
+      \pgfmathsetmacro{\wsbetween}{ (\wp - 8 * \ws - 2 * \margin * \wp) / (8 + 1) }
+    }{
+      \pgfmathsetmacro{\wsbetween}{ (0.95*(216+2+6*9)/tan(2*atan(exp(-0.005))) - 10 * \ws - 2 * \margin * 0.95*(216+2+6*9)/tan(2*atan(exp(-0.005)))) / (10 + 1) }
+    }
+    \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
+    \ifthenelse{\lengthtest{\iLayer pt=1 pt}}{
+      \draw\iso (0, \Rmin-\Rshift) -- (0.25*\Lmin, \Rmin-\Rshift) -- (0.25*\Lmax, \Rmax-\Rshift) -- (0, \Rmax-\Rshift) -- cycle; %first (when starting from the left) trapeze of the second layer (right after presampler)
+      \draw\iso (0.25*\Lmin, \Rmin-\Rshift) -- (0.5*\Lmin, \Rmin-\Rshift) -- (0.5*\Lmax, \Rmax-\Rshift) -- (0.25*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (0.5*\Lmin, \Rmin-\Rshift) -- (0.75*\Lmin, \Rmin-\Rshift) -- (0.75*\Lmax, \Rmax-\Rshift) -- (0.5*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (0.75*\Lmin, \Rmin-\Rshift) -- (1*\Lmin, \Rmin-\Rshift) -- (1*\Lmax, \Rmax-\Rshift) -- (0.75*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (-1.*\Lmin, \Rmin-\Rshift) -- (-0.75*\Lmin, \Rmin-\Rshift) -- (-0.75*\Lmax, \Rmax-\Rshift) -- (-1.*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (-0.75*\Lmin, \Rmin-\Rshift) -- (-0.5*\Lmin, \Rmin-\Rshift) -- (-0.5*\Lmax, \Rmax-\Rshift) -- (-0.75*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (-0.5*\Lmin, \Rmin-\Rshift) -- (-0.25*\Lmin, \Rmin-\Rshift) -- (-0.25*\Lmax, \Rmax-\Rshift) -- (-0.5*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (-0.25*\Lmin, \Rmin-\Rshift) -- (0*\Lmin, \Rmin-\Rshift) -- (0*\Lmax, \Rmax-\Rshift) -- (-0.25*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (1*\Lmin, \Rmin-\Rshift) -- (1.25*\Lmin, \Rmin-\Rshift) -- (1.25*\Lmax, \Rmax-\Rshift) -- (1*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (1.25*\Lmin, \Rmin-\Rshift) -- (1.5*\Lmin, \Rmin-\Rshift) -- (1.5*\Lmax, \Rmax-\Rshift) -- (1.25*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (1.5*\Lmin, \Rmin-\Rshift) -- (1.75*\Lmin, \Rmin-\Rshift) -- (1.75*\Lmax, \Rmax-\Rshift) -- (1.5*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (1.75*\Lmin, \Rmin-\Rshift) -- (2*\Lmin, \Rmin-\Rshift) -- (2*\Lmax, \Rmax-\Rshift) -- (1.75*\Lmax, \Rmax-\Rshift) -- cycle;
+    }{
+      \draw\iso (0, \Rmin-\Rshift) -- (\Lmin, \Rmin-\Rshift) -- (\Lmax, \Rmax-\Rshift) -- (0, \Rmax-\Rshift) -- cycle;
+      \draw\iso (-1.*\Lmin, \Rmin-\Rshift) -- (-0.*\Lmin, \Rmin-\Rshift) -- (-0.*\Lmax, \Rmax-\Rshift) -- (-1.*\Lmax, \Rmax-\Rshift) -- cycle;
+      \draw\iso (1*\Lmin, \Rmin-\Rshift) -- (2*\Lmin, \Rmin-\Rshift) -- (2*\Lmax, \Rmax-\Rshift) -- (1*\Lmax, \Rmax-\Rshift) -- cycle;}
+    \ifthenelse{\lengthtest{\iLayer pt=11 pt}}{
+    \draw[blue] (-0.*\Lmax, \Rmax-\Rshift) -- ({-0.*\Lmax}, {\Rmax-\Rshift+(\Rmax-\Rmin)/10});
+    \draw[blue] (1*\Lmax, \Rmax-\Rshift) -- ({1*\Lmax+(\Lmax-\Lmin)/20}, {\Rmax-\Rshift+(\Rmax-\Rmin)/10});
+    \node[scale=1.75,blue] at (-0.*\Lmax+0.08, {\Rmax-\Rshift+2*(\Rmax-\Rmin)/10 +1.5}) {\Huge ${\theta=90^{\circ}}$};
+    \node[scale=1.75,blue] at (1*\Lmax-0.08, {\Rmax-\Rshift+2*(\Rmax-\Rmin)/10 +1.5}) {\Huge ${\theta=89.43}$};
+    }{}
+  }
+
+
+
+
+  \foreach \iLayer in {0,...,11} {
+
+      %stuff related to the cell
+      \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
+        \pgfmathsetmacro{\Rmin}{216.0}
+        \pgfmathsetmacro{\Rmax}{\Rmin+\drFirst}
+        }{
+        \pgfmathsetmacro{\Rmin}{216+\drFirst+(\iLayer-1)*\drRest}
+        \pgfmathsetmacro{\Rmax}{\Rmin+\drRest}
+        }
+
+      \pgfmathsetmacro{\Lmin}{\Rmin/tan(2*atan(exp(-0.005)))}
+      \pgfmathsetmacro{\Lmax}{\Rmax/tan(2*atan(exp(-0.005)))}
+
+      %stuff related to the trace exit
+      \ifthenelse{\lengthtest{\iLayer pt<\NlayerExtractedfront pt}}{ % if traces that we extract from front
+          \pgfmathsetmacro{\Rout}{216}    % where the trace exits the detector
+          \pgfmathsetmacro{\widthAtTraceExit}{\widthInner} %width at exit of the detector
+        }{
+          \pgfmathsetmacro{\Rout}{216+\drFirst+11*\drRest}
+          \pgfmathsetmacro{\widthAtTraceExit}{\widthOuter}
+       }
+
+      %treat the first cell
+      \ifthenelse{\lengthtest{\iLayer pt=0 pt}}{
+        \pgfmathsetmacro{\downstep}{\Lmin/(4)} %carefulo, this 4 is not NcellExtractedFront it is the division of the strip layer
+        \pgfmathsetmacro{\upstep}{\Lmax/(4)} %Ntrace + 1
+          \foreach \iTrace in {1,...,4} { %-0.5*\downstep is to acount for the spacing to the neighborhood cell
+            \fill\trace ({ -0.5*\downstep + \iTrace * \downstep - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\downstep + \iTrace * \downstep + 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\upstep + \iTrace * \upstep + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ -0.5*\upstep + \iTrace * \upstep - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+          }
+      }{}
+      % second cell
+      \pgfmathsetmacro{\LminFirstLayer}{216./tan(2*atan(exp(-0.005)))}
+      \ifthenelse{\lengthtest{\iLayer pt=1 pt}}{
+        \fill\trace ({\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ \LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ \Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+      }{}
+      %third cell
+      \ifthenelse{\lengthtest{\iLayer pt=2 pt}}{
+        \fill\trace({3*\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ 3*\LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({3*\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ 3*\Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+      }{}
+      % all other cells
+      \ifthenelse{\lengthtest{\iLayer pt>\NlayerExtractedfront pt}}{
+        \pgfmathsetmacro{\downstep}{\Lmin/(7)}
+        \pgfmathsetmacro{\upstep}{\widthAtTraceExit/(7)}
+        \fill\trace ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep - 0.5 * \wt}, {\Rmin-\Rshift}) -- ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep + 0.5 * \wt}, {\Rmin-\Rshift}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep + 0.5 * \wt}, {\Rout - \Rshift}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep - 0.5 * \wt}, {\Rout - \Rshift} ) -- cycle ;
+      }{}
+      %all the other cells
+
+  }
+  %   \foreach \iLayer in {11,...,0} {
+  %   \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
+  %     \pgfmathsetmacro{\Rmin}{216+\drFirst}   %end of the trace in y
+  %     %\pgfmathsetmacro{\Rmax}{216}  %start of the trace in theta
+  %     \def\halfN{4} % half number of splitting of the cell in x direction (if six traces --> halfN = 3)
+  %     \def\already{0}
+  %   } {
+  %     \ifthenelse{\lengthtest{\iLayer pt<3 pt}}{
+  %     \pgfmathsetmacro{\Rmin}{216+\drFirst+\drRest}
+  %     %\pgfmathsetmacro{\Rmax}{216+\drFirst}
+  %       \def\halfN{1}
+  %       \def\already{0}
+  %     }{
+  %     \ifthenelse{\lengthtest{\iLayer pt<5 pt}}{
+  %     \pgfmathsetmacro{\Rmin}{216+\drFirst+\drRest}
+  %     %\pgfmathsetmacro{\Rmax}{216+\drFirst}
+  %       \def\halfN{0}
+  %       \def\already{0}
+  %     }{
+  %     \pgfmathsetmacro{\Rmin}{216+\drFirst+(\iLayer-1)*\drRest}
+  %     %\pgfmathsetmacro{\Rmax}{\Rmin+\drRest}
+  %     \pgfmathsetmacro\halfN{1}
+  %     \pgfmathsetmacro{\already}{\iLayer-4}
+  %   } } }
+  %
+  %   \pgfmathsetmacro{\Lmin}{\Rmin/tan(2*atan(exp(-0.005)))}
+  %   %\pgfmathsetmacro{\Lmax}{\Rmax/tan(2*atan(exp(-0.005)))}
+  %   \pgfmathsetmacro{\whv}{\Lmin}
+  %   \pgfmathsetmacro{\ws}{2*\HT}
+  %   \pgfmathsetmacro{\wp}{\Lmin*0.95}
+  %   \pgfmathsetmacro{\HS}{(5/6. * \H - 5*\h - 2*\HT)/2.}
+  %   \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
+  %     \pgfmathsetmacro{\wsbetween}{ (\wp - 8 * \ws - 2 * \margin * \wp) / (8 + 1) }
+  %   }{\ifthenelse{\lengthtest{\iLayer pt<2 pt}}{
+  %     \pgfmathsetmacro{\wsbetween}{ 0.2 }
+  %   }{
+  %     \pgfmathsetmacro{\wsbetween}{ (0.95*(216+2+6*9)/tan(2*atan(exp(-0.005))) - 10 * \ws - 2 * \margin * 0.95*(216+2+6*9)/tan(2*atan(exp(-0.005)))) / (10 + 1) }
+  %   } }
+  %   \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
+  %   \ifthenelse{\lengthtest{\halfN pt>0 pt}}{
+  %     \foreach \iShield in {1,...,\halfN} {
+  %            %\fill\trace ({ -1 * (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws)  + 0.5 * \wt}, { \Rmin-\Rshift})
+  %       %rectangle ({ -1 * (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) - 0.5 * \wt}, {\Rout - \Rshift} ) ;
+  %
+  %       %\fill\trace[rotate=-0.2] ({ -1 * (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws)  + 0.5 * \wt+\Lmin}, { \Rmin-\Rshift})
+  %       %rectangle ({ -1 * (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) - 0.5 * \wt+\Lmin}, {\Rout - \Rshift} ) ;
+  %   }
+  %     \foreach \iShield in {1,...,\halfN} { %desl with the lefthanbd side cell compared to the main one
+  %       \fill\trace ({ (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) - 0.5 * \wt}, { \Rmin-\Rshift})
+  %       rectangle ({ (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) + 0.5 * \wt}, {\Rout - \Rshift} ) ;
+  %       \fill\trace[rotate=0.2] ({ (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) - 0.5 * \wt-\Lmin}, { \Rmin-\Rshift})
+  %       rectangle ({ (\already + 0.5 + (\iShield - 1)) * (\wsbetween + \ws) + 0.5 * \wt-\Lmin}, {\Rout - \Rshift} ) ;
+  %     }
+  %   }{}
+  % }
+  %Hide the neighborhood
+  %\fill[white] (-0.7, -1) -- (-0.8, \drFirst+11*\drRest+0.4) -- (-0.,  \drFirst+11*\drRest+0.4) -- (-2,-1) --cycle;
+ %\fill[white] (0.7, -1) -- (0.8, \drFirst+11*\drRest+0.4) -- (2,  \drFirst+11*\drRest+0.4) -- (2,-1) --cycle;
+
+  \fill[white, decorate,decoration={random steps, segment length=10mm, amplitude=10mm}] (-1, -0.1) -- (-1, {\drFirst+11*\drRest+0.5}) -- (-0.1,  {\drFirst+11*\drRest+0.5}) -- (-0.1,-0.1) -- cycle;
+  \fill[white, decorate,decoration={random steps, segment length=10mm, amplitude=10mm}] ({\widthInner+0.1}, -0.1) -- ({\widthInner+1},-0.1) -- ({\widthOuter+1}, {\drFirst+11*\drRest+0.2}) -- ({\widthOuter+0.1}, {\drFirst+11*\drRest+0.2}) -- cycle;
+  \fill[white] ({\widthInner+0.2}, -0.4) -- ({\widthInner*2},-0.4) -- ({\widthOuter*2}, {\drFirst+11*\drRest+0.2}) -- ({\widthOuter+0.2}, {\drFirst+11*\drRest+0.2}) -- cycle;
+
+\end{tikzpicture}
+
+\end{document}
