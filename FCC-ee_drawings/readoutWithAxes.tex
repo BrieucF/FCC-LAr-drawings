@@ -9,7 +9,7 @@
 
 \begin{tikzpicture}[xscale=1,yscale=1,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\footnotesize
  \pgfmathsetmacro{\xone}{0}
- \pgfmathsetmacro{\xtwo}{220} % z at which the calo ends
+ \pgfmathsetmacro{\xtwo}{216} % z at which the calo ends
  \pgfmathsetmacro{\yone}{216} % radius at which the calo starts
  \pgfmathsetmacro{\ytwo}{{\yone+40}}
  \pgfmathsetmacro{\ytwoNotProjected}{{\yone+56.5}}
@@ -46,7 +46,7 @@
 \begin{scope}[line width = 2pt,  black,font={\fontsize{50pt}{12}\selectfont}]<+->;
     % horizontal line
   \draw[-{Stealth[scale=4,width=10pt]}] (\xone - 6, \yone - 5) -- coordinate (y axis mid) (\xtwo + 4, \yone - 5) node [right, xshift=10pt, yshift=8pt, scale = 3] {z} node [right, xshift=-30pt, yshift=-100pt, scale = 3] {(cm)};
-  \foreach \z in {0,...,22}{
+  \foreach \z in {0,...,21}{
   \pgfmathsetmacro{\realdistfromzero}{\z*10}
   \draw ({\xone + 10*\z},\yone - 6) --  (\xone  + 10*\z, \yone - 4) node[below, yshift = - 100pt, scale=3] {\pgfmathprintnumber[fixed,precision=0]{\realdistfromzero}};
   }
@@ -55,19 +55,19 @@
 % Draw all the diagonal lines separately for the strip layer and regular cells (one line per theta cell goes accross all layers for longitudinal cells)
 \begin{scope}[very thick, black, line width = 1pt]
 \pgfmathsetmacro{\dtheta}{0.5625/4.0}
-\foreach \x in {1, ..., 319}
+\foreach \x in {1, ..., 315}
 % the one from strip layer that do not have to be cut
 \draw ({(\yone+\drFirst)*tan(\x * \dtheta))}, \yone+\drFirst) -- ({(\yone+\drFirst+\drRest) * tan(\x * \dtheta)}, \yone+\drFirst+\drRest);
 % the one from strip  layer that need to be cut because close to the edge
-\foreach \x in {320,..., 322}
+\foreach \x in {315,..., 318}
 \draw ({(\yone+\drFirst)*tan(\x * \dtheta))}, \yone+\drFirst) -- (\xtwo,{\xtwo*tan(90 - \x * \dtheta)});
 \end{scope}
 \begin{scope}[very thick, black, line width = 4pt]
 \def\dtheta{0.5625}
-\foreach \x in {1, ..., 72}
+\foreach \x in {1, ..., 71}
 % the diagonal line from regular cells that do not need to be cut
 \draw ({\yone*tan(\x * \dtheta))}, \yone) -- ({\ytwo * tan(\x * \dtheta)}, \ytwo);
-\foreach \x in {73,..., 81}
+\foreach \x in {72,..., 80}
 % the diagonal line from regular cells that need to be cut
 \draw ({\yone*tan(\x * \dtheta))}, \yone) -- (\xtwo, {\xtwo * tan(90 - \x * \dtheta)});
 \end{scope}

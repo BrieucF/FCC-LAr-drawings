@@ -329,7 +329,7 @@
     \draw[double arrow=3pt colored by white and violet!80] (22.2,2.2) -- (22.2+1.51, 1.4); %towards mangification box
     \node[red!80] at (22.2+1.7,2.4) {\large absorber};
     \draw[double arrow=3pt colored by white and red!80] (22.2+1.7,2.2) -- (24.5+0.26, 1.4);
-    \node[green!80] at (22.2+1.7+1.4,2.4) {\large read-out electrode};
+    \node[green!80] at (22.2+1.7+1.4,2.4) {\large readout electrode};
     \draw[double arrow=3pt colored by white and green!80] (22.2+1.7+1.4,2.2) -- (22.2+1.7+1.55-0.41, 1.4);
 
 
@@ -378,7 +378,7 @@
         %\draw[<->,>=latex,black,line width=1pt] ({\xCFirst + \cellInThickness*cos(-\angle+\phiReadout)}, {\yCFirst - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-
         %\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeFirstInCm} cm};
 
-        \draw[<->,>=latex,black,line width=1pt] ({\xCFirst}, {\yCFirst}) -- ({\xCnext}, {\yCnext}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeFirstInCm} cm};
+        \draw[<->,>=latex,black,line width=1pt] ({\xCFirst}, {\yCFirst}) -- ({\xCnext}, {\yCnext}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{2.12} cm};
       } {}
     % put the arrow showing the length of the second cell (the foreach is in case you want it everywhere but here there is another condition after that)
       \foreach \j in {0,..., 10}
@@ -399,7 +399,7 @@
         {
           \message{\planeRest};
           \pgfmathsetmacro{\planeRestInCm}{{10.*\planeRest}};
-          \pgfmathsetmacro{\planeRestInCm}{{5.39}};
+          \pgfmathsetmacro{\planeRestInCm}{{4.94}};
           % \fill[%decorate, decoration={random steps,segment length=0.2mm, amplitude=0.01mm},
           % Draw the arrow on regular cells thick, rounded corners=1ex,,white, opacity=0.6]  ({\xC}, {\yC}) circle ({\planeRest});
           %\draw[<->,>=latex, ultra thick,black]({\xC + \cellInThickness*cos(-\angle+\phiReadout)}, {\yC - \cellInThickness*sin(-\angle+\phiReadout)}) -- ({\xCnext + \cellOutThickness*cos(-\angle+\phiReadout)}, {\yCnext - \cellOutThickness*sin(-\angle+\phiReadout)}) node [above, midway, rotate={90+\angle-\phiReadout}] {\LARGE \num[round-mode=places,round-precision=2]{\planeRestInCm} cm};
