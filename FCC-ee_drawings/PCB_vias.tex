@@ -30,9 +30,9 @@
 
 \begin{document}
 \def\LAYER{7} % cm
-\def\H{0.12}
-\def\HP{0.003}
-\def\HT{0.017}
+\def\H{0.127}
+\def\HP{0.0100}
+\def\HT{0.0150}
 \def\h{0.0035}
 \def\wt{0.0127}
 \def\via{0.01}
@@ -59,7 +59,7 @@
   \pgfmathsetmacro{\HS}{(5/6. * \H - 5*\h - 2*\HT)/2.}
   \pgfmathsetmacro{\wsbetween}{ (\wp - \N * \ws - 2 * \margin * \wp) / (\N + 1) }
   \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
-\clip (0.24*\whv, -4*\h-\HT-\HS-\HP) rectangle (0.6*\whv + 0.01, 4*\h+\HT+\HS+\HP);
+\clip (0.24*\whv, -4*\h-\HT-\HS-\HP) rectangle (0.55*\whv + 0.01, 4*\h+\HT+\HS+\HP);
   % LAYER -6
   \fill\HV ({-0.5 * \whv}, {{2.5*\h+\HT+\HS+\HP}}) rectangle ++ (\whv, \h) ;
   % LAYER -5

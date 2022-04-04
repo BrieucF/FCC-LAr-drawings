@@ -46,7 +46,8 @@
 %\def\Rin{216.}
 \def\drFirst{2.322267}  % length of presampler parallel to it in cm
 \def\drRest{5.385130} % length of other layers parallel to them
-\def\deltaThetaFirst{0.5729482460729542}
+\def\deltaThetaFirst{0.57}
+\def\overlapTracePad{0.2}  % length of presampler parallel to it in cm
 \begin{tikzpicture}[xscale=10,yscale=1,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\Large
 %\begin{tikzpicture}[xscale=12,yscale=0.6,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\Large
     % Deal with the traces
@@ -97,6 +98,7 @@
     %   \pgfmathsetmacro{\wsbetween}{ (0.95*(216+2+6*9)*tan(\deltaThetaFirst)/10 - 10 * \ws - 2 * \margin * 0.95*(216+2+6*9)*tan(\deltaThetaFirst) / ((10 + 1)*10) }
     % }
 
+	% Draw the PCB cells
     \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
     \ifthenelse{\lengthtest{\iLayer pt=1 pt}}{
       \draw\iso (0, \Rmin-\Rshift) -- (0.25*\Lmin, \Rmin-\Rshift) -- (0.25*\Lmax, \Rmax-\Rshift) -- (0, \Rmax-\Rshift) -- cycle; %first (when starting from the left) trapeze of the second layer (right after presampler)
@@ -119,14 +121,14 @@
     \draw[blue] (-0.*\Lmax, \Rmax-\Rshift) -- ({-0.*\Lmax}, {\Rmax-\Rshift+(\Rmax-\Rmin)/10});
     \draw[blue] (1*\Lmax, \Rmax-\Rshift) -- ({1*\Lmax+(\Lmax-\Lmin)/20}, {\Rmax-\Rshift+(\Rmax-\Rmin)/10});
     \node[scale=1.75,blue] at (-0.*\Lmax+0.08, {\Rmax-\Rshift+2*(\Rmax-\Rmin)/10 +0.5}) {\Huge ${\theta=90^{\circ}}$};
-    \node[scale=1.75,blue] at (1*\Lmax-0.15, {\Rmax-\Rshift+2*(\Rmax-\Rmin)/10 +0.5}) {\Huge ${\theta=89.43}$};
+    \node[scale=1.75,blue] at (1*\Lmax-0.15, {\Rmax-\Rshift+2*(\Rmax-\Rmin)/10 +0.5}) {\Huge ${\theta=89.43^{\circ}}$};
     }{}
   }
 
 
 
 
-  \foreach \iLayer in {0,...,11} {
+  \foreach \iLayer in {0,...,12} {
 
       %stuff related to the cell
       \ifthenelse{\lengthtest{\iLayer pt<1 pt}}{
@@ -154,24 +156,27 @@
         \pgfmathsetmacro{\downstep}{\Lmin/(4)} %carefulo, this 4 is not NcellExtractedFront it is the division of the strip layer
         \pgfmathsetmacro{\upstep}{\Lmax/(4)} %Ntrace + 1
           \foreach \iTrace in {1,...,4} { %-0.5*\downstep is to acount for the spacing to the neighborhood cell
-            \fill\trace ({ -0.5*\downstep + \iTrace * \downstep - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\downstep + \iTrace * \downstep + 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\upstep + \iTrace * \upstep + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ -0.5*\upstep + \iTrace * \upstep - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+            \fill\trace ({ -0.5*\downstep + \iTrace * \downstep - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\downstep + \iTrace * \downstep + 0.5 * \wt}, {\Rout-\Rshift}) -- ({ -0.5*\upstep + \iTrace * \upstep + 0.5 * \wt}, {\Rmax - \Rshift +\overlapTracePad}) -- ({ -0.5*\upstep + \iTrace * \upstep - 0.5 * \wt}, {\Rmax - \Rshift + \overlapTracePad} ) -- cycle ;
           }
+          \fill\trace ({ 2*\downstep - 0.5 * \wt}, {\Rout-\Rshift}) -- ({  2*\downstep  + 0.5 * \wt}, {\Rout-\Rshift}) -- ({ 2*\downstep + 0.5 * \wt}, {\Rmax - \Rshift - \drFirst + \overlapTracePad}) -- ({ 2*\downstep - 0.5 * \wt}, {\Rmax - \Rshift - \drFirst + \overlapTracePad}) -- cycle ;
+          
       }{}
       % second cell
       \pgfmathsetmacro{\LminFirstLayer}{216.*tan(\deltaThetaFirst)*1}
       \ifthenelse{\lengthtest{\iLayer pt=1 pt}}{
-        \fill\trace ({\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ \LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ \Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+        \fill\trace ({\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ \LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift + \overlapTracePad}) -- ({ \Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift + \overlapTracePad} ) -- cycle ;
       }{}
       %third cell
       \ifthenelse{\lengthtest{\iLayer pt=2 pt}}{
-        \fill\trace({3*\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ 3*\LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({3*\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift}) -- ({ 3*\Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift} ) -- cycle ;
+        \fill\trace({3*\LminFirstLayer/4 - 0.5 * \wt}, {\Rout-\Rshift}) -- ({ 3*\LminFirstLayer/4 + 0.5 * \wt}, {\Rout-\Rshift}) -- ({3*\Lmax/4 + 0.5 * \wt}, {\Rmax - \Rshift + \overlapTracePad}) -- ({ 3*\Lmax/4 - 0.5 * \wt}, {\Rmax - \Rshift + \overlapTracePad} ) -- cycle ;
       }{}
       % all other cells
       \ifthenelse{\lengthtest{\iLayer pt>\NlayerExtractedfront pt}}{
-        \pgfmathsetmacro{\downstep}{\Lmin/(7)}
-        \pgfmathsetmacro{\upstep}{\widthAtTraceExit/(7)}
-        \fill\trace ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep - 0.5 * \wt}, {\Rmin-\Rshift}) -- ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep + 0.5 * \wt}, {\Rmin-\Rshift}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep + 0.5 * \wt}, {\Rout - \Rshift}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep - 0.5 * \wt}, {\Rout - \Rshift} ) -- cycle ;
+        \pgfmathsetmacro{\downstep}{\Lmin/(8)}
+        \pgfmathsetmacro{\upstep}{\widthAtTraceExit/(8)}
+        \fill\trace ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep - 0.5 * \wt}, {\Rmin - \Rshift - \overlapTracePad}) -- ({\Lmin + 0.5*\downstep + (\NlayerExtractedfront - \iLayer)*\downstep + 0.5 * \wt}, {\Rmin - \Rshift - \overlapTracePad}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep + 0.5 * \wt}, {\Rout - \Rshift}) -- ({\widthAtTraceExit + 0.5*\upstep + (\NlayerExtractedfront - \iLayer)*\upstep - 0.5 * \wt}, {\Rout - \Rshift} ) -- cycle ;
       }{}
+      
       %all the other cells
 
   }
