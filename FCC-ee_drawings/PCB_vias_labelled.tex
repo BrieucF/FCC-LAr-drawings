@@ -59,12 +59,12 @@
   \pgfmathsetmacro{\HS}{(5/6. * \H - 5*\h - 2*\HT)/2.}
   \pgfmathsetmacro{\wsbetween}{ (\wp - \N * \ws - 2 * \margin * \wp) / (\N + 1) }
   \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
-\clip (0.24*\whv, -4*\h-\HT-\HS-\HP) rectangle (0.55*\whv + 0.01, 4*\h+\HT+\HS+\HP);
+\clip (0.24*\whv, -4*\h-\HT-\HS-\HP) rectangle (0.5615*\whv + 0.01, 4*\h+\HT+\HS+\HP);
   % LAYER -6
   \fill\HV ({-0.5 * \whv}, {{2.5*\h+\HT+\HS+\HP}}) rectangle ++ (\whv, \h) ;
   % LAYER -5
   \fill\iso ({-0.5 * \whv}, {{2.5*\h+\HT+\HS}}) rectangle ++ (\whv, \HP) ;
-  \draw[- stealth]({0.5 * \whv}, {{3*\h + \HT+\HS+\HP}}) -- ({0.51 * \whv}, {{2.5*\h + \HT+\HS+\HP}}) node[pos=1, right] {\small High voltage};
+  \draw[- stealth]({0.5 * \whv}, {{3*\h + \HT+\HS+\HP}}) -- ({0.51 * \whv}, {{2.5*\h + \HT+\HS+\HP}}) node[pos=1, right] {High voltage};
   %\draw ({0.5 * \whv}, {{2.5*\h + \HT+\HS+\HP}}) -- ({0.52 * \whv}, {{2.5*\h + \HT+\HS+\HP}});
   %\draw ({0.5 * \wp}, {{2.5*\h + \HT+\HS}}) -- ({0.52 * \whv}, {{2.5*\h + \HT+\HS}});
 
@@ -81,7 +81,7 @@
   % LAYER -3
   \fill\iso ({-0.5 * \whv}, {{1.5*\h+\HT}}) rectangle ++ (\whv, \HS) ;
 %    \draw ({0.5 * \whv}, {1.5*\h + \HT}) --  ({0.52 * \whv}, {{1.5*\h + \HT}});
-    \draw [- stealth] ({0.5 * \wp}, {{2*\h + \HT+\HS}}) -- ({0.51 * \whv}, {{1.5*\h + \HT+\HS}}) node[pos=1, right, text width=3cm] { \small Signal pick-up};
+    \draw [- stealth] ({0.5 * \wp}, {{2*\h + \HT+\HS}}) -- ({0.51 * \whv}, {{1.5*\h + \HT+\HS}}) node[pos=1, right] {Signal pick-up};
 %    \dimline[color=black, extension start length= 0,  extension end length= 0,
 %      extension start style={line width = 2pt},extension end style={line width = 2pt},
 %      label style={rotate=90,right,fill=none}]
@@ -98,8 +98,8 @@
   \fill\trace ({0.4 * \whv - \viaSafety}, {{-0.5*\h}}) rectangle ++ (0.1 * \whv + \viaSafety, \h) ;
   \fill\trace ({0.4 * \whv - \viaSafety - \via}, {{-0.5*\h}}) rectangle ++ (\via, 2.5*\h + \HT + \HS) ;
       %\draw ({0.5 * \whv}, {{0.5*\h}}) -- ({0.52 * \whv}, {{0.5*\h}});
-      \draw  [- stealth]  ({0.5 * \whv}, {{1*\h + \HT}}) -- ({0.51 * \whv}, {{1*\h + \HT}}) node[pos=1, right, text width=3cm] { \small Ground shield};
-       \draw  [- stealth]  ({0.5 * \whv}, {{0.*\h }}) -- ({0.51 * \whv}, {{0.*\h }}) node[pos=1, right, text width=3cm] { \small Signal extraction};
+      \draw  [- stealth]  ({0.5 * \whv}, {{1*\h + \HT}}) -- ({0.51 * \whv}, {{1*\h + \HT}}) node[pos=1, right] {Ground shield};
+       \draw  [- stealth]  ({0.5 * \whv}, {{0.*\h }}) -- ({0.51 * \whv}, {{0.*\h }}) node[pos=1, right] {Signal extraction};
 
 %        \dimline[color=black, extension start length=0,  extension end length= 0,
 %          extension start style={line width = 2pt},extension end style={line width = 2pt},label style={rotate=90,right, fill=none}]
@@ -111,9 +111,9 @@
   % LAYER 2
   \fill\iso ({-0.5 * \whv}, {{-1.5*\h-\HT}}) rectangle ++ (\whv, \h) ;
   \fill\trace ({0.4 * \whv}, {{-1.5*\h-\HT}}) rectangle ++ (0.1*\whv, \h) ;
-        \draw  [- stealth]  ({0.5 * \whv}, {{-1*\h - \HT}}) -- ({0.51 * \whv}, {{-1*\h - \HT}}) node[pos=1, right, text width=3cm] { \small Ground shield};
-            \draw [- stealth] ({0.5 * \wp}, {{-2*\h - \HT-\HS}}) -- ({0.51 * \whv}, {{-1.5*\h - \HT-\HS}}) node[pos=1, right, text width=3cm] { \small Signal pick-up};
-            \draw[- stealth]({0.5 * \whv}, {{-3*\h - \HT-\HS-\HP}}) -- ({0.51 * \whv}, {{-2.5*\h - \HT-\HS-\HP}}) node[pos=1, right] {\small High voltage};
+        \draw  [- stealth]  ({0.5 * \whv}, {{-1*\h - \HT}}) -- ({0.51 * \whv}, {{-1*\h - \HT}}) node[pos=1, right] {Ground shield};
+            \draw [- stealth] ({0.5 * \wp}, {{-2*\h - \HT-\HS}}) -- ({0.51 * \whv}, {{-1.5*\h - \HT-\HS}}) node[pos=1, right] {Signal pick-up};
+            \draw[- stealth]({0.5 * \whv}, {{-3*\h - \HT-\HS-\HP}}) -- ({0.51 * \whv}, {{-2.5*\h - \HT-\HS-\HP}}) node[pos=1, right] {High voltage};
 %      \draw ({0.5 * \whv}, {{-0.5*\h-\HT}}) -- ({0.52 * \whv}, {{-0.5*\h-\HT}});
 %      \draw ({0.5 * \whv}, {{-1.5*\h-\HT}}) -- ({0.52 * \whv}, {{-1.5*\h-\HT}});
 %        \dimline[color=black, extension start length=0,extension end length=0,
