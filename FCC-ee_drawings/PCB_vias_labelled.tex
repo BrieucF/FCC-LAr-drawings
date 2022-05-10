@@ -1,0 +1,156 @@
+\RequirePackage{luatex85}
+\documentclass[a4paper,class=article,border=0pt,crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{tikz-dimline}
+\usepackage{unicode-math}
+\usepackage{pgf}
+\definecolor{myviolet}{RGB}{55,54,112}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\usetikzlibrary{calc,fadings,decorations.pathreplacing,patterns,decorations.pathmorphing,spy,arrows,decorations.markings,fadings}
+ \pgfplotsset{compat=1.14}
+
+\newcommand{\metalone}{[pattern= horizontal lines, pattern color=blue]}
+\newcommand{\metaltwo}{[pattern= vertical lines, pattern color=purple]}
+\newcommand{\poly}{[pattern= grid, pattern color=red]}
+\newcommand{\pdiff}{[pattern= north east lines, pattern color=orange]}
+\newcommand{\ndiff}{[pattern= north west lines, pattern color=green]}
+\newcommand{\pwell}{[pattern= crosshatch dots, pattern color=orange]}
+\newcommand{\nwell}{[pattern= crosshatch dots, pattern color=green]}
+\newcommand{\oxide}{[pattern = bricks, pattern color = olive]}
+\newcommand{\silicon}{[fill = white]}
+\newcommand{\metalthree}{[fill = teal]}
+
+
+
+\newcommand{\iso}{[pattern= crosshatch dots, pattern color=teal]}
+\newcommand{\trace}{[fill=orange]}
+\newcommand{\HV}{[fill=orange!80!red, orange!80!red]}
+
+\begin{document}
+\def\LAYER{7} % cm
+\def\H{0.127}
+\def\HP{0.0100}
+\def\HT{0.0150}
+\def\h{0.0035}
+\def\wt{0.0127}
+\def\via{0.01}
+\def\viaSafety{0.01}
+\def\margin{0.}
+\begin{tikzpicture}[xscale=55,yscale=55,line/.style={<->,shorten >=0.4cm,shorten <=0.4cm},thick]\Large
+  \ifthenelse{\lengthtest{\LAYER pt<1 pt}}{
+    \pgfmathsetmacro{\L}{192/tan(2*atan(exp(-0.005)))}
+    \def\N{8}
+  } {
+    \ifthenelse{\lengthtest{\LAYER pt=1 pt}}{
+      \pgfmathsetmacro{\L}{0.25 * (192+2+(\LAYER-1)*9)/tan(2*atan(exp(-0.005)))} %strip
+    }{
+      \pgfmathsetmacro{\L}{(192+2+(\LAYER-1)*9)/tan(2*atan(exp(-0.005)))}
+      }
+    \ifthenelse{\lengthtest{\LAYER pt<3 pt}}{
+      \def\N{0}
+    } { \pgfmathsetmacro\N{(\LAYER-2)*2}}
+  }
+  \def\N{0}
+  \pgfmathsetmacro{\whv}{\L}
+  \pgfmathsetmacro{\ws}{2*\HT}
+  \pgfmathsetmacro{\wp}{\L*0.95}
+  \pgfmathsetmacro{\HS}{(5/6. * \H - 5*\h - 2*\HT)/2.}
+  \pgfmathsetmacro{\wsbetween}{ (\wp - \N * \ws - 2 * \margin * \wp) / (\N + 1) }
+  \pgfmathsetmacro{\wtbetween}{ (\ws - \wt) / 2 }
+\clip (0.24*\whv, -4*\h-\HT-\HS-\HP) rectangle (0.55*\whv + 0.01, 4*\h+\HT+\HS+\HP);
+  % LAYER -6
+  \fill\HV ({-0.5 * \whv}, {{2.5*\h+\HT+\HS+\HP}}) rectangle ++ (\whv, \h) ;
+  % LAYER -5
+  \fill\iso ({-0.5 * \whv}, {{2.5*\h+\HT+\HS}}) rectangle ++ (\whv, \HP) ;
+  \draw[- stealth]({0.5 * \whv}, {{3*\h + \HT+\HS+\HP}}) -- ({0.51 * \whv}, {{2.5*\h + \HT+\HS+\HP}}) node[pos=1, right] {\small High voltage};
+  %\draw ({0.5 * \whv}, {{2.5*\h + \HT+\HS+\HP}}) -- ({0.52 * \whv}, {{2.5*\h + \HT+\HS+\HP}});
+  %\draw ({0.5 * \wp}, {{2.5*\h + \HT+\HS}}) -- ({0.52 * \whv}, {{2.5*\h + \HT+\HS}});
+
+%  \dimline[color=black, extension start length= 0,  extension end length= 0,
+%    extension start style={line width = 2pt},extension end style={line width = 2pt},
+%    line style={arrows=dimline reverse-dimline reverse},label style={rotate=90,right,fill=none}]
+%          {({0.52 * \whv}, {{2.5*\h+\HT+\HS+\HP}})}
+%          {({0.52 * \whv}, {{2.5*\h+\HT+\HS}})}
+%          {$\mathbfit{h_{HV}}$};
+  % LAYER -4
+  \fill\iso ({-0.5 * \whv}, {{1.5*\h+\HT+\HS}}) rectangle ++ ({0.5 * (\whv-\wp)}, \h) ;
+  \fill\trace ({-0.5 * \wp}, {{1.5*\h+\HT+\HS}}) rectangle ++ (\wp, \h) ;
+  \fill\iso ({0.5 * \wp}, {{1.5*\h+\HT+\HS}}) rectangle ++ ({0.5 * (\whv-\wp)}, \h) ;
+  % LAYER -3
+  \fill\iso ({-0.5 * \whv}, {{1.5*\h+\HT}}) rectangle ++ (\whv, \HS) ;
+%    \draw ({0.5 * \whv}, {1.5*\h + \HT}) --  ({0.52 * \whv}, {{1.5*\h + \HT}});
+    \draw [- stealth] ({0.5 * \wp}, {{2*\h + \HT+\HS}}) -- ({0.51 * \whv}, {{1.5*\h + \HT+\HS}}) node[pos=1, right, text width=3cm] { \small Signal pick-up};
+%    \dimline[color=black, extension start length= 0,  extension end length= 0,
+%      extension start style={line width = 2pt},extension end style={line width = 2pt},
+%      label style={rotate=90,right,fill=none}]
+%            {({0.52 * \whv}, {{1.5*\h+\HT+\HS}})}
+%            {({0.52 * \whv}, {{1.5*\h+\HT}})}
+%            {$\mathbfit{h_m}$};
+  % LAYER -2
+  \fill\iso ({-0.5 * \whv}, {{0.5*\h+\HT}}) rectangle ++ (\whv, \h) ;
+  \fill\trace ({0.4 * \whv}, {{0.5*\h+\HT}}) rectangle ++ (0.1 * \whv, \h) ;
+  % LAYER -1
+  \fill\iso ({-0.5 * \whv}, {{0.5*\h}}) rectangle ++ (\whv, \HT) ;
+  %% % LAYER 0
+  \fill\iso ({-0.5 * \whv}, {{-0.5*\h}}) rectangle ++ (\whv, \h) ;
+  \fill\trace ({0.4 * \whv - \viaSafety}, {{-0.5*\h}}) rectangle ++ (0.1 * \whv + \viaSafety, \h) ;
+  \fill\trace ({0.4 * \whv - \viaSafety - \via}, {{-0.5*\h}}) rectangle ++ (\via, 2.5*\h + \HT + \HS) ;
+      %\draw ({0.5 * \whv}, {{0.5*\h}}) -- ({0.52 * \whv}, {{0.5*\h}});
+      \draw  [- stealth]  ({0.5 * \whv}, {{1*\h + \HT}}) -- ({0.51 * \whv}, {{1*\h + \HT}}) node[pos=1, right, text width=3cm] { \small Ground shield};
+       \draw  [- stealth]  ({0.5 * \whv}, {{0.*\h }}) -- ({0.51 * \whv}, {{0.*\h }}) node[pos=1, right, text width=3cm] { \small Signal extraction};
+
+%        \dimline[color=black, extension start length=0,  extension end length= 0,
+%          extension start style={line width = 2pt},extension end style={line width = 2pt},label style={rotate=90,right, fill=none}]
+%                {({0.52 * \whv}, {{0.5 * \h + \HT}})}
+%                {({0.52 * \whv}, {{0.5 * \h}})}
+%                {$\mathbfit{h_s}$};
+  % LAYER 1
+  \fill\iso ({-0.5 * \whv}, {{-0.5*\h-\HT}}) rectangle ++ (\whv, \HT) ;
+  % LAYER 2
+  \fill\iso ({-0.5 * \whv}, {{-1.5*\h-\HT}}) rectangle ++ (\whv, \h) ;
+  \fill\trace ({0.4 * \whv}, {{-1.5*\h-\HT}}) rectangle ++ (0.1*\whv, \h) ;
+        \draw  [- stealth]  ({0.5 * \whv}, {{-1*\h - \HT}}) -- ({0.51 * \whv}, {{-1*\h - \HT}}) node[pos=1, right, text width=3cm] { \small Ground shield};
+            \draw [- stealth] ({0.5 * \wp}, {{-2*\h - \HT-\HS}}) -- ({0.51 * \whv}, {{-1.5*\h - \HT-\HS}}) node[pos=1, right, text width=3cm] { \small Signal pick-up};
+            \draw[- stealth]({0.5 * \whv}, {{-3*\h - \HT-\HS-\HP}}) -- ({0.51 * \whv}, {{-2.5*\h - \HT-\HS-\HP}}) node[pos=1, right] {\small High voltage};
+%      \draw ({0.5 * \whv}, {{-0.5*\h-\HT}}) -- ({0.52 * \whv}, {{-0.5*\h-\HT}});
+%      \draw ({0.5 * \whv}, {{-1.5*\h-\HT}}) -- ({0.52 * \whv}, {{-1.5*\h-\HT}});
+%        \dimline[color=black, extension start length=0,extension end length=0,
+%          extension start style={line width = 2pt},extension end style={line width = 2pt},
+%          line style={arrows=dimline reverse-dimline reverse},label style={rotate=90,right,fill=none}]
+%                {({0.52 * \whv}, {{-0.5*\h-\HT}})}
+%                {({0.52 * \whv}, {{-1.5*\h-\HT}})}
+%                {$\mathbfit{t}$};
+
+
+
+  % LAYER 3
+  \fill\iso ({-0.5 * \whv}, {-1.5*\h-\HT-\HS}) rectangle ++ (\whv, \HS) ;
+  % LAYER 4
+  \fill\iso ({-0.5 * \whv}, {{-2.5*\h-\HT-\HS}}) rectangle ++ ({0.5 * (\whv-\wp)}, \h) ;
+  \fill\trace ({-0.5 * \wp}, {{-2.5*\h-\HT-\HS}}) rectangle ++ (\wp, \h) ;
+  \fill\iso ({0.5 * \wp}, {{-2.5*\h-\HT-\HS}}) rectangle ++ ({0.5 * (\whv-\wp)}, \h) ;
+  % LAYER 5
+  \fill\iso ({-0.5 * \whv}, {{-2.5*\h-\HT-\HS-\HP}}) rectangle ++ (\whv, \HP) ;
+  %second via bottom to top
+  \fill\trace ({0.4 * \whv - \viaSafety - \via}, {{-2.5*\h-\HT-\HS}}) rectangle ++ (\via, 2.5*\h + \HT + \HS) ;
+  % LAYER 6
+  \fill\HV ({-0.5 * \whv}, {{-3.5*\h-\HT-\HS-\HP}}) rectangle ++ (\whv, \h);
+
+%  \draw ({0.5 * \whv}, {{3.5*\h + \HT+\HS+\HP}}) -- ({0.55 * \wp+0.025}, {{3.5*\h + \HT+\HS+\HP}});
+%  \draw ({0.5 * \whv}, {{-3.5*\h - \HT-\HS-\HP}}) -- ({0.55 * \wp+0.025}, {{-3.5*\h - \HT-\HS-\HP}});
+%  \dimline[color=black, extension start length= 0,  extension end length= 0,
+%    extension start style={line width = 2pt},extension end style={line width = 2pt},
+%    label style={rotate=90,right,fill=none}]
+%          {({0.55 * \wp+0.025}, {{3.5*\h+\HT+\HS+\HP}})}
+%          {({0.55 * \wp+0.025}, {{-3.5*\h-\HT-\HS-\HP}})}
+%          {$\mathbfit{H}$};
+
+  \fill[white,decorate,decoration={random steps, segment length=3mm, amplitude=3mm}] (-0.51*\whv, {1.1*(-3.5*\h-\HT-\HS-\HP)}) rectangle (0.25*\whv, {1.1*(3.5*\h+\HT+\HS+\HP)});
+  %% \fill[white,decorate,decoration={random steps, segment length=3mm, amplitude=3mm}] (0.51*\whv, {1.1*(-3.5*\h-\HT-\HS-\HP)}) rectangle (0.465*\whv, {1.1*(3.5*\h+\HT+\HS+\HP)});
+
+
+\end{tikzpicture}
+
+\end{document}
