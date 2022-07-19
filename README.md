@@ -1,4 +1,4 @@
 # FCC-LAr-drawings
 Repository hosting the LaTeX technical drawings for FCC LAr Calo.
 
-Compile with XeLaTex.
+Compile with XeLaTex except for readoutWithAxes.
